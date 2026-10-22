@@ -4,10 +4,11 @@
 async function data(){
     
     document.getElementById("b").addEventListener("click", async() => {
-        const city = document.getElementById("city").value;
-        const country = document.getElementById("country_code").value;
+        const city = document.getElementById("city").value || '';
+        const country = document.getElementById("country_code").value || '';
+        const state = document.getElementById("state").value || '';
 
-        const response=await fetch(`/weather?city=${city}&country=${country}`,{
+        const response=await fetch(`/weather?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`,{
             method:'get',
             headers:{"User-agent":"BAB109",
                 "Accept":"application/json"

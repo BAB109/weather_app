@@ -9,15 +9,14 @@ app.use(express.urlencoded({ extended: true }));
 const API_key = process.env.OPEN_WEATHER_API_KEY;
 app.get('/weather', async (req, res) => {
     try {
-        const city_name = req.query.city;
-        const country_code = req.query.country;
-
+        const city_name = req.query.city || '';
+        const country_code = req.query.country || '';
+        const state_code = req.query.state ||'';
         const response = await fetch(
-            `http://api.openweathermap.org/geo/1.0/direct?q=${city_name},${country_code}&limit=1&appid=${API_key}`
+            `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city_name)},${encodeURIComponent(state_code)},${encodeURIComponent(country_code)}&limit=5&appid=${API_key}`
         );
         console.log("Geocoding response status:", response.status);
         const data1 = await response.json();
-
         if (data1.length === 0) {
             return res.status(404).json({
                 error: 'City not found'
@@ -26,11 +25,10 @@ app.get('/weather', async (req, res) => {
 
         const lat = data1[0].lat;
         const lon = data1[0].lon;
-
         const response2 = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_key}`
         );
-        
+        console.log(response2.status)
         if (!response2.ok) {
             return res.status(response2.status).json({
                 error: 'Unable to fetch weather data'
@@ -38,7 +36,6 @@ app.get('/weather', async (req, res) => {
         }
 
         const data = await response2.json();
-
         const temp_kelvin = data.main.temp;
         const humidity = data.main.humidity;
         const temp_celsius = Number(
@@ -52,7 +49,6 @@ app.get('/weather', async (req, res) => {
 
     } catch (err) {
         console.error(err);
-
         res.status(500).json({
             error: 'Internal server error'
         });
