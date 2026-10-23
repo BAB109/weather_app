@@ -22,3 +22,13 @@ async function data(){
     });
 }
 data()
+
+const btn = document.getElementById("b");
+
+btn.onclick = () => {
+  btn.classList.remove("animate");
+
+  void btn.offsetWidth; // restart animation
+
+  btn.classList.add("animate");
+};
